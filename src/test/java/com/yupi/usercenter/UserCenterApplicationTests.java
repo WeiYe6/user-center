@@ -15,6 +15,6 @@ public class UserCenterApplicationTests {
 
     @Test
     public void testSelect() {
-        User user = new User();
+        
     }
 }
