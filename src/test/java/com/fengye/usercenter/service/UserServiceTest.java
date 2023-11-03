@@ -1,6 +1,6 @@
-package com.yupi.usercenter.service;
+package com.fengye.usercenter.service;
 
-import com.yupi.usercenter.model.domain.User;
+import com.fengye.usercenter.model.domain.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

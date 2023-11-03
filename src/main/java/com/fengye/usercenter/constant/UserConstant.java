@@ -1,4 +1,4 @@
-package com.yupi.usercenter.constant;
+package com.fengye.usercenter.constant;
 
 /**
  * 用户常量

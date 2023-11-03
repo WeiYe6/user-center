@@ -1,7 +1,7 @@
-package com.yupi.usercenter.service;
+package com.fengye.usercenter.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.yupi.usercenter.model.domain.User;
+import com.fengye.usercenter.model.domain.User;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -48,4 +48,20 @@ public interface UserService extends IService<User> {
      * @return
      */
     int userLogout(HttpServletRequest request);
+
+    /**
+     * 管理员修改用户
+     *
+     * @param newuser 修改的用户
+     * @param request
+     * @return
+     */
+    boolean updateUser(User newuser, HttpServletRequest request);
+
+    /**
+     * 管理员添加用户
+     * @param user 新添的用户
+     * @return
+     */
+    boolean addUser(User user);
 }

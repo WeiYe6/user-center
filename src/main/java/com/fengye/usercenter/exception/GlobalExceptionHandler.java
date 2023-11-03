@@ -1,8 +1,8 @@
-package com.yupi.usercenter.exception;
+package com.fengye.usercenter.exception;
 
-import com.yupi.usercenter.common.BaseResponse;
-import com.yupi.usercenter.common.ErrorCode;
-import com.yupi.usercenter.common.ResultUtils;
+import com.fengye.usercenter.common.BaseResponse;
+import com.fengye.usercenter.common.ErrorCode;
+import com.fengye.usercenter.common.ResultUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

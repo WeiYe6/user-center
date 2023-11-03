@@ -1,4 +1,4 @@
-package com.yupi.usercenter.model.domain;
+package com.fengye.usercenter.model.domain;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
@@ -12,7 +12,7 @@ import java.util.Date;
  */
 @TableName(value ="user")
 @Data
-public class User implements Serializable {
+public class User  implements Serializable {
     /**
      * 主键id
      */
@@ -58,6 +58,16 @@ public class User implements Serializable {
      * 电话
      */
     private String phone;
+
+    /**
+     * 年龄
+     */
+
+    private String age;
+    /**
+     * 电话
+     */
+    private String introduction;
 
     /**
      * 创建时间

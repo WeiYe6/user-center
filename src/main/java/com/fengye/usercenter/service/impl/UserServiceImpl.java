@@ -1,12 +1,13 @@
-package com.yupi.usercenter.service.impl;
+package com.fengye.usercenter.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.yupi.usercenter.common.ErrorCode;
-import com.yupi.usercenter.exception.BusinessException;
-import com.yupi.usercenter.mapper.UserMapper;
-import com.yupi.usercenter.model.domain.User;
-import com.yupi.usercenter.service.UserService;
+import com.fengye.usercenter.constant.UserConstant;
+import com.fengye.usercenter.common.ErrorCode;
+import com.fengye.usercenter.exception.BusinessException;
+import com.fengye.usercenter.mapper.UserMapper;
+import com.fengye.usercenter.model.domain.User;
+import com.fengye.usercenter.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -16,8 +17,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static com.yupi.usercenter.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
  * 用户服务实现类
@@ -143,7 +142,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper , User> implements U
         User safetyUser = getSafetyUser(user);
 
         //4.记录用户的登录状态
-        request.getSession().setAttribute(USER_LOGIN_STATE,safetyUser);
+        request.getSession().setAttribute(UserConstant.USER_LOGIN_STATE,safetyUser);
 
         return safetyUser;
 
@@ -171,6 +170,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper , User> implements U
         safetyUser.setPhone(originUser.getPhone());
         safetyUser.setUserStatus(originUser.getUserStatus());
         safetyUser.setCreateTime(originUser.getCreateTime());
+        safetyUser.setAge(originUser.getAge());
+        safetyUser.setIntroduction(originUser.getIntroduction());
         return safetyUser;
     }
 
@@ -182,7 +183,88 @@ public class UserServiceImpl extends ServiceImpl<UserMapper , User> implements U
     @Override
     public int userLogout(HttpServletRequest request) {
         //移除登录态
-        request.getSession().removeAttribute(USER_LOGIN_STATE);
+        request.getSession().removeAttribute(UserConstant.USER_LOGIN_STATE);
         return 1;
+    }
+
+    @Override
+    public boolean updateUser(User newuser, HttpServletRequest request) {
+        QueryWrapper<User> queryWrapper = null;
+        long count;
+        User olduser = userMapper.selectOne(new QueryWrapper<User>().eq("id", newuser.getId()));
+        //如果没有改动过账户则不需要进行下面的判断
+        if (!newuser.getUserAccount().equals(olduser.getUserAccount())) {
+            //账户不能重复
+            queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("userAccount",newuser.getUserAccount());
+            count = userMapper.selectCount(queryWrapper);
+            if (count > 0){
+                throw new BusinessException(ErrorCode.PARAMS_ERROR,"已存在该账户");
+            }
+        }
+        //如果没有改动过星球编号则不需要进行下面的判断
+        if (!newuser.getPlanetCode().equals(olduser.getPlanetCode())) {
+            //星球编号不能重复
+            queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("planetCode", newuser.getPlanetCode());
+            count = userMapper.selectCount(queryWrapper);
+            if (count > 0) {
+                throw new BusinessException(ErrorCode.PARAMS_ERROR, "已存在该星球编号");
+            }
+        }
+        userMapper.updateById(newuser);
+        return true;
+    }
+
+    @Override
+    public boolean addUser(User user) {
+        //1.校验 非空  同时判断 是否为 空、”“、null
+        if (StringUtils.isAnyBlank(user.getUserAccount(),user.getPlanetCode())){
+            throw new BusinessException(ErrorCode.NULL_ERROR,"参数为空");
+        }
+        if (user.getUserAccount().length() < 4){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"用户账户过短");
+        }
+
+        if (user.getPlanetCode().length() > 5){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"星球编号过长");
+        }
+
+        //账户不能包含特殊字符
+        String validPattern = "[`~!@#$%^&*()+=|{}':;',\\\\[\\\\].<>/?~! @#￥%……&* ()——+|{}【】‘；：”“’。，、？]";
+        Matcher matcher = Pattern.compile(validPattern).matcher(user.getUserAccount());
+        if (matcher.find()){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"用户账户有违规字符");
+        }
+
+        //账户不能重复
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("userAccount",user.getUserAccount());
+        long count = userMapper.selectCount(queryWrapper);
+        if (count > 0){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"已存在该账户");
+        }
+
+        //星球编号不能重复
+        queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("planetCode",user.getPlanetCode());
+        count = userMapper.selectCount(queryWrapper);
+        if (count > 0){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"已存在该星球编号");
+        }
+
+        //设置默认密码 123456
+        user.setUserPassword("12345678");
+
+        //2.对密码进行加密(MD5)
+        String encryptPassword = DigestUtils.md5DigestAsHex((SALT + user.getUserPassword()).getBytes());
+        user.setUserPassword(encryptPassword);//用加密密码覆盖上面的明文密码
+
+        //3.向数据库插入用户数据
+        boolean saveResult = this.save(user);
+        if (!saveResult){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"插入数据失败");
+        }
+        return true;
     }
 }
