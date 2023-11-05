@@ -8,11 +8,12 @@ import java.util.Date;
 
 /**
  * 用户表
+ *
  * @TableName user
  */
-@TableName(value ="user")
+@TableName(value = "user")
 @Data
-public class User  implements Serializable {
+public class User implements Serializable {
     /**
      * 主键id
      */
@@ -65,7 +66,7 @@ public class User  implements Serializable {
 
     private String age;
     /**
-     * 电话
+     * 个人简介
      */
     private String introduction;
 
