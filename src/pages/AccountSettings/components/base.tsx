@@ -23,7 +23,6 @@ const beforeUpload = (file: { type: string; size: number; }) => {
     return false;
   }
   message.success('头像修改成功');
-  window.location.reload(); // 刷新页面
   return true;
 };
 // 头像组件 方便以后独立，增加裁剪之类的功能
