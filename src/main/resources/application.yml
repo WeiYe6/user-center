@@ -34,7 +34,7 @@ mybatis-plus:
 #自定义的阿里云OSS配置信息
 aliyun:
   oss:
-    endpoint: https://oss-cn-beijing.aliyuncs.com
-    accessKeyId: LTAI5t8eDfYigvWSQCPterk1
-    accessKeySecret: lB6kPXpoI67Lq7qPYzqdgtGdhXyUy8
-    bucketName: web-frame-job01
+    endpoint: xxxxx
+    accessKeyId: xxxxx
+    accessKeySecret: xxxxx
+    bucketName: xxxxx
